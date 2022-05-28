@@ -1,6 +1,8 @@
-import fs from 'fs'
-import readline from 'readline'
-import { google } from 'googleapis'
+require('dotenv/config');
+const fs = require('fs');
+const readline = require('readline');
+const { google } = require('googleapis');
+const main = require('./main');
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/presentations'];
@@ -13,7 +15,7 @@ const TOKEN_PATH = 'token.json';
 fs.readFile('credentials.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
   // Authorize a client with credentials, then call the Google Slides API.
-  authorize(JSON.parse(content), createImage);
+  authorize(JSON.parse(content), main);
 });
 
 /**
@@ -64,53 +66,4 @@ function getNewToken(oAuth2Client, callback) {
       callback(oAuth2Client);
     });
   });
-}
-
-const pageObjectId = 'id1'
-
-function createImage(auth) {
-  const slides = google.slides({ version: 'v1', auth });
-
-  // 1 mm = 36000 EMU
-  const mm = 36000;
-  const imageId = 'MyImage_01';
-  const emu4M = {
-    magnitude: 90 * mm,
-    unit: 'EMU',
-  };
-  const requests = [{
-    createImage: {
-      objectId: imageId,
-      url: "http://s2.glbimg.com/lTUhRSG_HLiZm_hnV0PtPVRY1dw=/e.glbimg.com/og/ed/f/original/2016/04/05/2c.jpg",
-      elementProperties: {
-        pageObjectId,
-        size: {
-          height: emu4M,
-          width: emu4M,
-        },
-        transform: {
-          scaleX: 1,
-          scaleY: 1,
-          translateX: 100000,
-          translateY: 100000,
-          unit: 'EMU',
-        },
-      },
-    },
-  }];
-
-  slides.presentations.batchUpdate({
-    presentationId: process.env.PRESENTATION_ID,
-    requestBody: {
-      requests,
-    }
-  }, (err, res) => {
-    if (err) {
-      console.log(err);
-
-    } else {
-
-      console.log(`Created image with ID: ${res.data.replies[0].createImage.objectId}`);
-    }
-  })
 }

@@ -3,3 +3,4 @@ node_modules
 code.txt
 credentials.json
 token.json
+images/**
