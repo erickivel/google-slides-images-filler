@@ -22,7 +22,7 @@ const main = async function (auth) {
 
   let iteration = 0;
 
-  const objectsIds = listPageObjectIds(auth);
+  const objectsIds = await listPageObjectIds(auth);
   console.log(objectsIds);
 
   for (const imageUrl of imagesUrls) {

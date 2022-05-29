@@ -1,12 +1,13 @@
 require('dotenv/config');
 const { google } = require('googleapis');
+const { promisify } = require('util');
 
-const listPageObjectIds = function (auth) {
+const listPageObjectIds = async function (auth) {
   const slides = google.slides({ version: 'v1', auth });
 
   let objectIds = []
 
-  slides.presentations.get({
+  const promise = slides.presentations.get({
     presentationId: process.env.PRESENTATION_ID
   }, (err, res) => {
     if (err) {
@@ -16,6 +17,8 @@ const listPageObjectIds = function (auth) {
       objectIds = slides.map(slide => slide.objectId);
     }
   })
+
+  objectIds = await promisify(promise)();
 
   return objectIds;
 }
