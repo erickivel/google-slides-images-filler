@@ -28,6 +28,7 @@ const height = {
 
 const addImageToPresentation = function (auth, imageUrl, pageObjectId, iteration) {
   const slides = google.slides({ version: 'v1', auth });
+  console.log(pageObjectId);
 
   const requests = [{
     createImage: {

@@ -11,6 +11,20 @@ const main = async function (auth) {
 
   const promises = []
 
+  let objectIds = [];
+  let currentSlideIndex;
+
+  // TODO synchronize
+  listPageObjectIds(auth, (err, res) => {
+    if (err) {
+      console.error("Something went wrong", err);
+    } else {
+      const slides = res.data.slides;
+      objectIds = slides.map(slide => slide.objectId);
+      currentSlideIndex = objectIds.findIndex(slide => slide === process.env.FIRST_PAGE_OBJECT_ID)
+    }
+  });
+
   for (const image of imageFilenames) {
     const promise = imageUpload(image);
     promises.push(promise);
@@ -21,17 +35,20 @@ const main = async function (auth) {
   responses.map(response => imagesUrls.push(response.image.url))
 
   let iteration = 0;
-
-  const objectsIds = await listPageObjectIds(auth);
-  console.log(objectsIds);
+  let slideIterator = 0;
 
   for (const imageUrl of imagesUrls) {
-    // TODO get next slide
 
-    const firstPageObjectId = process.env.FIRST_PAGE_OBJECT_ID;
+    const pageObjectId = objectIds[currentSlideIndex + slideIterator];
+    addImageToPresentation(auth, imageUrl, pageObjectId, iteration)
 
-    addImageToPresentation(auth, imageUrl, firstPageObjectId, iteration)
-    iteration++;
+    // Get next slide if the slide has already been filled
+    if (iteration + 1 == process.env.IMAGES_PER_SLIDE) {
+      slideIterator++;
+      iteration = 0;
+    } else {
+      iteration++;
+    }
   }
 }
 
