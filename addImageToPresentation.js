@@ -7,8 +7,11 @@ const cm = 36000 * 10;
 const IMAGES_PER_SLIDE = process.env.IMAGES_PER_SLIDE;
 const GAP = 0.3 * cm;
 
+// Google slides full size: 33.87 x 19.05 cm
 // Google slides available size: 30 x 15 cm
-const slideAvailableWidth = 30 * cm;
+const slideAvailableWidth = 24 * cm;
+// 19.05 - 4.05 (margin top) - 1 (margin bottom)
+const slideAvailableHeight = 14 * cm;
 
 // width/height image ratio
 const ratio = 0.562922869;
@@ -26,9 +29,13 @@ const height = {
   unit: 'EMU',
 };
 
+
+
 const addImageToPresentation = function (auth, imageUrl, pageObjectId, iteration) {
   const slides = google.slides({ version: 'v1', auth });
   console.log(pageObjectId);
+  const translateX = (1.93 * cm) + (iteration * (width.magnitude + (GAP)));
+  const translateY = (4.05 * cm);
 
   const requests = [{
     createImage: {
@@ -42,8 +49,8 @@ const addImageToPresentation = function (auth, imageUrl, pageObjectId, iteration
         transform: {
           scaleX: 1,
           scaleY: 1,
-          translateX: (1.93 * cm) + (iteration * (width.magnitude + (GAP))),
-          translateY: (4 * cm),
+          translateX,
+          translateY,
           unit: 'emu',
         },
       },
