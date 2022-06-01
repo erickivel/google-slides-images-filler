@@ -25,6 +25,7 @@ const main = async function (auth) {
     }
   });
 
+  console.log("Uploading images...");
   for (const image of imageFilenames) {
     const promise = imageUpload(image);
     promises.push(promise);
@@ -37,8 +38,8 @@ const main = async function (auth) {
   let iteration = 0;
   let slideIterator = 0;
 
+  console.log("Adding images to the presentation...");
   for (const imageUrl of imagesUrls) {
-
     const pageObjectId = objectIds[currentSlideIndex + slideIterator];
     addImageToPresentation(auth, imageUrl, pageObjectId, iteration)
 
