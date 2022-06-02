@@ -12,8 +12,7 @@ const LINE_GAP = 0.4 * cm;
 const imagesPerLine = Number(IMAGES_PER_SLIDE) / Number(LINES);
 
 // Google slides full size: 33.87 x 19.05 cm
-
-// Google slides available size: 30 x 15 cm
+// Size that you want to be occupied: 30 x 15 cm
 const slideAvailableWidth = 24 * cm;
 
 // width/height image ratio
@@ -32,23 +31,15 @@ const height = {
   unit: 'EMU',
 };
 
-
-
 let currentLine = 0;
 
 const addImageToPresentation = function (auth, imageUrl, pageObjectId, iteration) {
   const slides = google.slides({ version: 'v1', auth });
 
-
+  // Break Line
   if ((currentLine + iteration !== 0) && (iteration % imagesPerLine === 0)) {
     currentLine++;
   }
-
-  // console.log(imagesPerLine);
-  // console.log("current line", currentLine);
-  // console.log("iteration", iteration);
-
-  // Break Line
   let actualIteration = iteration >= imagesPerLine ? iteration % imagesPerLine : iteration;
 
   // Center width and height
@@ -59,7 +50,6 @@ const addImageToPresentation = function (auth, imageUrl, pageObjectId, iteration
     translateY = (((19.05 * cm) - actualHeight) / 2) + (currentLine * (actualHeight + LINE_GAP));
   }
   const translateX = ((33.87 * cm - slideAvailableWidth) / 2) + (actualIteration * (actualWidth + COLUMN_GAP));
-
 
   const requests = [{
     createImage: {

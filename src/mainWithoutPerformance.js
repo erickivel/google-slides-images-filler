@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 
 const imageUpload = require("./imageUpload.js");
-const addImageToPresentation = require('./addImageToPresentation.js');
+const addImageToPresentation = require('./googleSlidesMethods/addImageToPresentation.js');
 
 const main = async function (auth) {
   console.time("without promise all");
@@ -16,14 +16,15 @@ const main = async function (auth) {
   }
 
   console.log(imagesUrls);
+
+  let iteration = 0;
+
+  for (const imageUrl of imagesUrls) {
+    addImageToPresentation(auth, imageUrl, iteration)
+    iteration++;
+  }
+
   console.timeEnd("without promise all");
-
-  // let iteration = 0;
-
-  // for (const imageUrl of imagesUrls) {
-  //   addImageToPresentation(auth, imageUrl, iteration)
-  //   iteration++;
-  // }
 }
 
 function getImageFilenames() {

@@ -2,8 +2,8 @@ const path = require('path');
 const fs = require('fs');
 
 const imageUpload = require("./imageUpload.js");
-const addImageToPresentation = require('./addImageToPresentation.js');
-const listPageObjectIds = require('./listPageObjectIds.js');
+const addImageToPresentation = require('./googleSlidesMethods/addImageToPresentation.js');
+const listPageObjectIds = require('./googleSlidesMethods/listPageObjectIds.js');
 
 const main = async function (auth) {
   const imagesUrls = [];
@@ -14,7 +14,6 @@ const main = async function (auth) {
   let objectIds = [];
   let currentSlideIndex;
 
-  // TODO synchronize
   listPageObjectIds(auth, (err, res) => {
     if (err) {
       console.error("Something went wrong", err);
