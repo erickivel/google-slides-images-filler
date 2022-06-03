@@ -1,7 +1,7 @@
 require('dotenv/config');
 const { google } = require('googleapis');
 
-const listPageObjectIds = async function (auth, callback) {
+const listPageObjectIds = function (auth, callback) {
   const slides = google.slides({ version: 'v1', auth });
 
   slides.presentations.get({

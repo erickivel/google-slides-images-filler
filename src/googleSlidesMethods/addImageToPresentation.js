@@ -13,7 +13,7 @@ const imagesPerLine = Number(IMAGES_PER_SLIDE) / Number(LINES);
 
 // Google slides full size: 33.87 x 19.05 cm
 // Size that you want to be occupied: 30 x 15 cm
-const slideAvailableWidth = 24 * cm;
+const slideAvailableWidth = 30 * cm;
 
 // width/height image ratio
 const ratio = 0.562922869;
