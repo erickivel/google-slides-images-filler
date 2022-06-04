@@ -5,51 +5,57 @@ const { google } = require('googleapis');
 const cm = 36000 * 10;
 
 const IMAGES_PER_SLIDE = process.env.IMAGES_PER_SLIDE;
-const LINES = process.env.LINES;
-const COLUMN_GAP = 0.3 * cm;
-const LINE_GAP = 0.4 * cm;
+const ROWS = process.env.ROWS;
+const COLUMN_GAP = process.env.COLUMN_GAP * cm;
+const ROW_GAP = process.env.ROW_GAP * cm;
 
-const imagesPerLine = Number(IMAGES_PER_SLIDE) / Number(LINES);
+const marginTop = 0 * cm;
 
-// Google slides full size: 33.87 x 19.05 cm
 // Size that you want to be occupied: 30 x 15 cm
-const slideAvailableWidth = 30 * cm;
+const slideAvailableWidth = process.env.WIDTH_TO_BE_OCCUPIED * cm;
+
+const imagesPerRow = Number(IMAGES_PER_SLIDE) / Number(ROWS);
+
+// Google slides full size with powerpoint format: 33.87 x 19.05 cm 
+// Google slides full size by default: 25.4 x 14.3cm
+const fullSlideWidth = 25.4 * cm;
+const fullSlideHeight = 14.3 * cm;
 
 // width/height image ratio
 const ratio = 0.562922869;
 
-const actualWidth = (slideAvailableWidth - (COLUMN_GAP * imagesPerLine)) / imagesPerLine
-const actualHeight = actualWidth / ratio;
+const individualImageWidth = (slideAvailableWidth - (COLUMN_GAP * imagesPerRow)) / imagesPerRow
+const individualImageHeight = individualImageWidth / ratio;
 
 const width = {
-  magnitude: actualWidth,
+  magnitude: individualImageWidth,
   unit: 'EMU',
 };
 
 const height = {
-  magnitude: actualHeight,
+  magnitude: individualImageHeight,
   unit: 'EMU',
 };
 
-let currentLine = 0;
+let currentRow = 0;
 
 const addImageToPresentation = function (auth, imageUrl, pageObjectId, iteration) {
   const slides = google.slides({ version: 'v1', auth });
 
-  // Break Line
-  if ((currentLine + iteration !== 0) && (iteration % imagesPerLine === 0)) {
-    currentLine++;
+  // Break Row
+  if ((currentRow + iteration !== 0) && (iteration % imagesPerRow === 0)) {
+    currentRow++;
   }
-  let actualIteration = iteration >= imagesPerLine ? iteration % imagesPerLine : iteration;
+  let actualIteration = iteration >= imagesPerRow ? iteration % imagesPerRow : iteration;
 
   // Center width and height
   let translateY;
-  if (LINES > 1) {
-    translateY = (((19.05 * cm) - ((actualHeight + LINE_GAP) * LINES)) / 2) + (currentLine * (actualHeight + LINE_GAP)) + 1.2 * cm;
+  if (ROWS > 1) {
+    translateY = ((fullSlideHeight - ((individualImageHeight + ROW_GAP) * ROWS)) / 2) + (currentRow * (individualImageHeight + ROW_GAP)) + marginTop;
   } else {
-    translateY = (((19.05 * cm) - actualHeight) / 2) + (currentLine * (actualHeight + LINE_GAP));
+    translateY = ((fullSlideHeight - individualImageHeight) / 2) + (currentRow * (individualImageHeight + ROW_GAP));
   }
-  const translateX = ((33.87 * cm - slideAvailableWidth) / 2) + (actualIteration * (actualWidth + COLUMN_GAP));
+  const translateX = ((fullSlideWidth - slideAvailableWidth) / 2) + (actualIteration * (individualImageWidth + COLUMN_GAP));
 
   const requests = [{
     createImage: {
@@ -85,7 +91,7 @@ const addImageToPresentation = function (auth, imageUrl, pageObjectId, iteration
   })
 
   if (iteration + 1 == IMAGES_PER_SLIDE) {
-    currentLine = 0;
+    currentRow = 0;
   }
 }
 
